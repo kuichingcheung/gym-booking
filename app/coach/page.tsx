@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 export default function CoachPage() {
   const [balance, setBalance] = useState<number | null>(null);
-  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const supabase = createClient();
   const router = useRouter();
 
@@ -16,14 +16,15 @@ export default function CoachPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      setEmail(user.email || "");
+
       const { data } = await supabase
         .from("profiles")
-        .select("name, class_balance")
+        .select("class_balance")
         .eq("id", user.id)
         .single();
 
       if (data) {
-        setName(data.name || "");
         setBalance(data.class_balance);
       }
     };
@@ -45,7 +46,9 @@ export default function CoachPage() {
         </button>
       </div>
 
-      <p className="text-gray-600 dark:text-zinc-400 mb-4">你好，{name || "教練"}</p>
+      <p className="text-gray-600 dark:text-zinc-400 mb-4 break-all">
+        登入帳戶：{email || "--"}
+      </p>
 
       <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-xl shadow p-4 mb-6">
         <p className="text-sm text-gray-500 dark:text-zinc-400">剩餘堂數</p>

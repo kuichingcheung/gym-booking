@@ -50,7 +50,10 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-sm bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-xl shadow p-6 space-y-6">
-        <h1 className="text-2xl font-bold text-center">登入</h1>
+        <h1 className="text-2xl font-bold text-center leading-tight">
+          <span className="block">ORCA FITNESS</span>
+          <span className="block">教練租場系統</span>
+        </h1>
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
