@@ -133,25 +133,25 @@ export default function BookPage() {
     <main className="min-h-screen p-4 max-w-lg mx-auto pb-10">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">預約場地</h1>
-        <Link href="/coach" className="text-sm text-blue-600">
+        <Link href="/coach" className="text-sm text-blue-600 dark:text-blue-400">
           返回
         </Link>
       </div>
 
       <div className="mb-6">
-        <label className="block text-sm font-medium mb-1">選擇日期</label>
+        <label className="block text-sm font-medium mb-1 text-gray-800 dark:text-zinc-200">選擇日期</label>
         <input
           type="date"
           value={selectedDate}
           onChange={(e) => setSelectedDate(e.target.value)}
-          className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full border border-gray-300 dark:border-zinc-600 rounded-lg px-3 py-2 bg-white dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
       <div className="mb-6">
         <div className="flex justify-between items-center mb-2">
           <p className="text-sm font-medium">選擇時段（可多選）</p>
-          <p className="text-sm text-gray-500">已選 {selectedSlots.length} 個</p>
+          <p className="text-sm text-gray-500 dark:text-zinc-400">已選 {selectedSlots.length} 個</p>
         </div>
         <div className="grid grid-cols-2 gap-2">
           {timeSlots.map((slot) => {
@@ -164,7 +164,7 @@ export default function BookPage() {
                 className={`border rounded-lg py-3 text-sm transition ${
                   isSelected
                     ? "bg-blue-600 text-white border-blue-600"
-                    : "hover:bg-blue-50 hover:border-blue-500"
+                    : "border-gray-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:bg-blue-50 dark:hover:bg-zinc-800 hover:border-blue-500"
                 }`}
               >
                 {slot}
@@ -180,7 +180,7 @@ export default function BookPage() {
           {selectedSlots.map((s) => (
             <div
               key={s.time}
-              className="bg-white border rounded-lg p-3 flex items-center justify-between"
+              className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-lg p-3 flex items-center justify-between"
             >
               <span className="font-medium">{s.time}</span>
               <div className="flex gap-2">
@@ -190,7 +190,7 @@ export default function BookPage() {
                   className={`px-3 py-1 text-sm rounded-full border ${
                     s.type === "normal"
                       ? "bg-blue-600 text-white border-blue-600"
-                      : "bg-gray-50"
+                      : "bg-gray-50 dark:bg-zinc-800 border-gray-200 dark:border-zinc-600"
                   }`}
                 >
                   普通 (1)
@@ -201,7 +201,7 @@ export default function BookPage() {
                   className={`px-3 py-1 text-sm rounded-full border ${
                     s.type === "one_to_two"
                       ? "bg-orange-500 text-white border-orange-500"
-                      : "bg-gray-50"
+                      : "bg-gray-50 dark:bg-zinc-800 border-gray-200 dark:border-zinc-600"
                   }`}
                 >
                   一對二 (1.5)
@@ -213,7 +213,7 @@ export default function BookPage() {
       )}
 
       {message && (
-        <p className={`text-center mb-4 ${message.includes("成功") ? "text-green-600" : "text-red-500"}`}>
+        <p className={`text-center mb-4 ${message.includes("成功") ? "text-green-600 dark:text-green-400" : "text-red-500 dark:text-red-400"}`}>
           {message}
         </p>
       )}
@@ -221,7 +221,7 @@ export default function BookPage() {
       <button
         onClick={handleSubmit}
         disabled={loading || !selectedDate || selectedSlots.length === 0}
-        className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium disabled:bg-gray-300"
+        className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium disabled:bg-gray-300 dark:disabled:bg-zinc-700"
       >
         {loading ? "處理中..." : `確認預約（扣 ${totalClasses || 0} 堂）`}
       </button>

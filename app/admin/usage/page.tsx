@@ -64,40 +64,40 @@ export default function UsagePage() {
     <main className="min-h-screen p-4 max-w-lg mx-auto pb-10">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">使用率</h1>
-        <Link href="/admin" className="text-sm text-blue-600">
+        <Link href="/admin" className="text-sm text-blue-600 dark:text-blue-400">
           返回
         </Link>
       </div>
 
       <div className="mb-6">
-        <label className="block text-sm font-medium mb-1">選擇日期</label>
+        <label className="block text-sm font-medium mb-1 text-gray-800 dark:text-zinc-200">選擇日期</label>
         <input
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="w-full border rounded-lg px-3 py-2"
+          className="w-full border border-gray-300 dark:border-zinc-600 rounded-lg px-3 py-2 bg-white dark:bg-zinc-800 text-gray-900 dark:text-zinc-100"
         />
       </div>
 
       {loading ? (
         <p>載入中...</p>
       ) : (
-        <div className="bg-white rounded-xl shadow overflow-hidden">
-          <div className="grid grid-cols-2 bg-gray-100 font-medium text-sm">
+        <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-xl shadow overflow-hidden">
+          <div className="grid grid-cols-2 bg-gray-100 dark:bg-zinc-800 font-medium text-sm">
             <div className="p-3">時段</div>
             <div className="p-3 text-right">預約數量</div>
           </div>
           {usage.map((item) => (
             <div
               key={item.time}
-              className="grid grid-cols-2 border-t text-sm"
+              className="grid grid-cols-2 border-t border-gray-200 dark:border-zinc-700 text-sm"
             >
               <div className="p-3">{item.time}</div>
               <div className="p-3 text-right font-medium">
                 {item.count > 0 ? (
-                  <span className="text-blue-600">{item.count}</span>
+                  <span className="text-blue-600 dark:text-blue-400">{item.count}</span>
                 ) : (
-                  <span className="text-gray-400">0</span>
+                  <span className="text-gray-400 dark:text-zinc-500">0</span>
                 )}
               </div>
             </div>

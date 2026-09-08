@@ -40,15 +40,15 @@ export default function CoachPage() {
     <main className="min-h-screen p-4 max-w-lg mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">教練主頁</h1>
-        <button onClick={handleLogout} className="text-sm text-red-500">
+        <button onClick={handleLogout} className="text-sm text-red-500 dark:text-red-400">
           登出
         </button>
       </div>
 
-      <p className="text-gray-600 mb-4">你好，{name || "教練"}</p>
+      <p className="text-gray-600 dark:text-zinc-400 mb-4">你好，{name || "教練"}</p>
 
-      <div className="bg-white rounded-xl shadow p-4 mb-6">
-        <p className="text-sm text-gray-500">剩餘堂數</p>
+      <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-xl shadow p-4 mb-6">
+        <p className="text-sm text-gray-500 dark:text-zinc-400">剩餘堂數</p>
         <p className="text-3xl font-bold">
           {balance === null ? "--" : balance}
         </p>
@@ -61,7 +61,7 @@ export default function CoachPage() {
           </button>
         </Link>
         <Link href="/coach/bookings">
-          <button className="w-full bg-gray-100 text-gray-800 py-3 rounded-lg font-medium">
+          <button className="w-full bg-gray-100 dark:bg-zinc-800 text-gray-800 dark:text-zinc-100 py-3 rounded-lg font-medium">
             我的預約
           </button>
         </Link>

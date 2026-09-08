@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { hasBookingSlotStarted } from "@/lib/bookingTime";
 
 interface Booking {
   id: string;
@@ -46,6 +47,11 @@ export default function MyBookingsPage() {
   }, []);
 
   const handleCancel = async (booking: Booking) => {
+    if (hasBookingSlotStarted(booking.booking_date, booking.start_time)) {
+      setMessage("此時段已開始，不能取消");
+      return;
+    }
+
     if (!confirm(`確定取消 ${booking.booking_date} ${booking.start_time.slice(0,5)} 的預約？\n將退回 ${booking.class_cost} 堂`)) {
       return;
     }
@@ -104,24 +110,38 @@ export default function MyBookingsPage() {
     <main className="min-h-screen p-4 max-w-lg mx-auto pb-10">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">我的預約</h1>
-        <Link href="/coach" className="text-sm text-blue-600">
+        <Link href="/coach" className="text-sm text-blue-600 dark:text-blue-400">
           返回
         </Link>
       </div>
 
       {message && (
-        <p className="text-center mb-4 text-green-600">{message}</p>
+        <p
+          className={`text-center mb-4 ${
+            message.includes("失敗") || message.includes("不能")
+              ? "text-red-500 dark:text-red-400"
+              : "text-green-600 dark:text-green-400"
+          }`}
+        >
+          {message}
+        </p>
       )}
 
       <div className="space-y-3">
         {bookings.length === 0 && (
-          <p className="text-gray-500 text-center py-10">暫時未有預約紀錄</p>
+          <p className="text-gray-500 dark:text-zinc-400 text-center py-10">暫時未有預約紀錄</p>
         )}
 
-        {bookings.map((booking) => (
+        {bookings.map((booking) => {
+          const started = hasBookingSlotStarted(
+            booking.booking_date,
+            booking.start_time
+          );
+
+          return (
           <div
             key={booking.id}
-            className={`bg-white border rounded-xl p-4 ${
+            className={`bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-xl p-4 ${
               booking.status === "cancelled" ? "opacity-60" : ""
             }`}
           >
@@ -135,8 +155,8 @@ export default function MyBookingsPage() {
               <span
                 className={`text-xs px-2 py-1 rounded-full ${
                   booking.status === "active"
-                    ? "bg-green-100 text-green-700"
-                    : "bg-gray-100 text-gray-500"
+                    ? "bg-green-100 text-green-700 dark:bg-green-900/60 dark:text-green-300"
+                    : "bg-gray-100 text-gray-500 dark:bg-zinc-800 dark:text-zinc-400"
                 }`}
               >
                 {booking.status === "active" ? "有效" : "已取消"}
@@ -144,21 +164,27 @@ export default function MyBookingsPage() {
             </div>
 
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-500 dark:text-zinc-400">
                 {booking.slot_type === "one_to_two" ? "一對二" : "普通"}（{booking.class_cost} 堂）
               </span>
 
-              {booking.status === "active" && (
+              {booking.status === "active" && !started && (
                 <button
                   onClick={() => handleCancel(booking)}
-                  className="text-sm text-red-500 font-medium"
+                  className="text-sm text-red-500 dark:text-red-400 font-medium"
                 >
                   取消預約
                 </button>
               )}
+              {booking.status === "active" && started && (
+                <span className="text-sm text-gray-400 dark:text-zinc-500">
+                  已開始，不能取消
+                </span>
+              )}
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
     </main>
   );
