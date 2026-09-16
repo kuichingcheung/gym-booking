@@ -48,17 +48,26 @@ export default function CoachBookingsAdminPage() {
           .select("id, name, class_balance")
           .eq("id", coachId)
           .single();
-        profile = retry.data;
-        profileError = retry.error;
-      }
 
-      if (profileError || !profile) {
+        if (retry.error || !retry.data) {
+          setMessage("找不到此教練");
+          setLoading(false);
+          return;
+        }
+
+        setCoach({ ...retry.data, email: null });
+      } else if (profile) {
+        setCoach({
+          id: profile.id,
+          name: profile.name,
+          email: profile.email ?? null,
+          class_balance: profile.class_balance,
+        });
+      } else {
         setMessage("找不到此教練");
         setLoading(false);
         return;
       }
-
-      setCoach(profile);
 
       const { data, error } = await supabase
         .from("bookings")

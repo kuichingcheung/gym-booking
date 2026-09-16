@@ -35,19 +35,32 @@ export default function AdminPage() {
         .select("id, name, class_balance")
         .eq("role", "coach")
         .order("name");
-      data = retry.data;
-      error = retry.error;
+
+      if (retry.error) {
+        setMessage("載入教練列表失敗：" + retry.error.message);
+        return;
+      }
+      setCoaches(
+        (retry.data || []).map((coach) => ({
+          ...coach,
+          email: null,
+        }))
+      );
+      return;
     }
 
     console.log("fetchCoaches data:", data);
     console.log("fetchCoaches error:", error);
 
-    if (error) {
-      setMessage("載入教練列表失敗：" + error.message);
-      return;
-    }
     if (data) {
-      setCoaches([...data]);
+      setCoaches(
+        data.map((coach) => ({
+          id: coach.id,
+          name: coach.name,
+          email: coach.email ?? null,
+          class_balance: coach.class_balance,
+        }))
+      );
     }
   };
 
