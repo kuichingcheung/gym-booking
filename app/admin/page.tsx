@@ -8,6 +8,7 @@ import Link from "next/link";
 interface Coach {
   id: string;
   name: string;
+  email?: string | null;
   class_balance: number;
 }
 
@@ -22,11 +23,21 @@ export default function AdminPage() {
   const router = useRouter();
 
   const fetchCoaches = async () => {
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from("profiles")
-      .select("id, name, class_balance")
+      .select("id, name, email, class_balance")
       .eq("role", "coach")
       .order("name");
+
+    if (error) {
+      const retry = await supabase
+        .from("profiles")
+        .select("id, name, class_balance")
+        .eq("role", "coach")
+        .order("name");
+      data = retry.data;
+      error = retry.error;
+    }
 
     console.log("fetchCoaches data:", data);
     console.log("fetchCoaches error:", error);
@@ -36,7 +47,7 @@ export default function AdminPage() {
       return;
     }
     if (data) {
-      setCoaches([...data]); // 強制新陣列觸發更新
+      setCoaches([...data]);
     }
   };
 
@@ -162,7 +173,7 @@ export default function AdminPage() {
             <option value="">-- 請選擇 --</option>
             {coaches.map((coach) => (
               <option key={coach.id} value={coach.id}>
-                {coach.name || coach.id.slice(0, 8)} （目前 {coach.class_balance} 堂）
+                {coach.email || coach.name || coach.id.slice(0, 8)} （目前 {coach.class_balance} 堂）
               </option>
             ))}
           </select>
@@ -210,11 +221,26 @@ export default function AdminPage() {
 
       <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-xl shadow p-4">
         <h2 className="font-bold text-lg mb-3">教練列表</h2>
+        <p className="text-xs text-gray-500 dark:text-zinc-400 mb-2">
+          點擊教練電郵可查看訂場紀錄
+        </p>
         <div className="space-y-2">
           {coaches.map((coach) => (
-            <div key={coach.id} className="flex justify-between border-b border-gray-200 dark:border-zinc-700 py-2">
-              <span>{coach.name || "未命名"}</span>
-              <span className="font-medium">{coach.class_balance} 堂</span>
+            <div key={coach.id} className="flex justify-between items-start gap-3 border-b border-gray-200 dark:border-zinc-700 py-2">
+              <div className="min-w-0">
+                <Link
+                  href={`/admin/coaches/${coach.id}`}
+                  className="text-blue-600 dark:text-blue-400 font-medium underline break-all"
+                >
+                  {coach.email || coach.name || "未命名"}
+                </Link>
+                {coach.email && coach.name ? (
+                  <p className="text-xs text-gray-500 dark:text-zinc-400 mt-0.5">
+                    {coach.name}
+                  </p>
+                ) : null}
+              </div>
+              <span className="font-medium shrink-0">{coach.class_balance} 堂</span>
             </div>
           ))}
           {coaches.length === 0 && (
