@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
+import { buildTimeSlots } from "@/lib/timeSlots";
 
 interface UsageItem {
   time: string;
@@ -15,11 +16,7 @@ export default function UsagePage() {
   const [loading, setLoading] = useState(false);
   const supabase = createClient();
 
-  const timeSlots = [
-    "07:00", "08:00", "09:00", "10:00", "11:00", "12:00",
-    "13:00", "14:00", "15:00", "16:00", "17:00", "18:00",
-    "19:00", "20:00", "21:00", "22:00", "23:00",
-  ];
+  const timeSlots = buildTimeSlots();
 
   const fetchUsage = async () => {
     setLoading(true);
@@ -38,18 +35,21 @@ export default function UsagePage() {
 
     // 統計每個時段數量
     const countMap: Record<string, number> = {};
-    timeSlots.forEach((t) => (countMap[t] = 0));
+    timeSlots.forEach((slot) => {
+      const start = slot.split("-")[0];
+      countMap[start] = 0;
+    });
 
     data?.forEach((b) => {
-      const hour = b.start_time.slice(0, 5); // "10:00:00" → "10:00"
-      if (countMap[hour] !== undefined) {
-        countMap[hour] += 1;
+      const start = b.start_time.slice(0, 5); // "10:30:00" → "10:30"
+      if (countMap[start] !== undefined) {
+        countMap[start] += 1;
       }
     });
 
-    const result = timeSlots.map((t) => ({
-      time: `${t}-${String(Number(t.slice(0, 2)) + 1).padStart(2, "0")}:00`,
-      count: countMap[t],
+    const result = timeSlots.map((slot) => ({
+      time: slot,
+      count: countMap[slot.split("-")[0]],
     }));
 
     setUsage(result);

@@ -4,8 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
-
-type SlotType = "normal" | "one_to_two";
+import { buildTimeSlots, slotClassCost, type SlotType } from "@/lib/timeSlots";
 
 interface SelectedSlot {
   time: string;
@@ -13,13 +12,7 @@ interface SelectedSlot {
 }
 
 export default function BookPage() {
-  const timeSlots = [
-    "07:00-08:00", "08:00-09:00", "09:00-10:00", "10:00-11:00",
-    "11:00-12:00", "12:00-13:00", "13:00-14:00", "14:00-15:00",
-    "15:00-16:00", "16:00-17:00", "17:00-18:00", "18:00-19:00",
-    "19:00-20:00", "20:00-21:00", "21:00-22:00", "22:00-23:00",
-    "23:00-24:00",
-  ];
+  const timeSlots = buildTimeSlots();
 
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlots, setSelectedSlots] = useState<SelectedSlot[]>([]);
@@ -43,7 +36,7 @@ export default function BookPage() {
   };
 
   const totalClasses = selectedSlots.reduce(
-    (sum, s) => sum + (s.type === "one_to_two" ? 1.5 : 1),
+    (sum, s) => sum + slotClassCost(s.type),
     0
   );
 
@@ -79,7 +72,7 @@ export default function BookPage() {
     // 逐個時段建立預約
     for (const slot of selectedSlots) {
       const [start, end] = slot.time.split("-");
-      const classCost = slot.type === "one_to_two" ? 1.5 : 1;
+      const classCost = slotClassCost(slot.type);
 
       // 1. 插入 booking
       const { data: booking, error: bookingError } = await supabase
@@ -150,7 +143,7 @@ export default function BookPage() {
 
       <div className="mb-6">
         <div className="flex justify-between items-center mb-2">
-          <p className="text-sm font-medium">選擇時段（可多選）</p>
+          <p className="text-sm font-medium">選擇時段（每格 1 小時，可選半點開始）</p>
           <p className="text-sm text-gray-500 dark:text-zinc-400">已選 {selectedSlots.length} 個</p>
         </div>
         <div className="grid grid-cols-2 gap-2">
