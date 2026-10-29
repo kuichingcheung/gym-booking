@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { buildTimeSlots, slotClassCost, type SlotType } from "@/lib/timeSlots";
+import { requestOrcaBookingNotify } from "@/lib/requestOrcaBookingNotify";
 
 interface SelectedSlot {
   time: string;
@@ -89,11 +90,13 @@ export default function BookPage() {
         .select()
         .single();
 
-      if (bookingError) {
-        setMessage("預約失敗：" + bookingError.message);
+      if (bookingError || !booking) {
+        setMessage("預約失敗：" + (bookingError?.message || "沒有返回預約紀錄"));
         setLoading(false);
         return;
       }
+
+      requestOrcaBookingNotify("created", booking.id);
 
       // 2. 扣除堂數
       await supabase

@@ -33,8 +33,8 @@ export async function middleware(request: NextRequest) {
 
   const path = request.nextUrl.pathname
 
-  // 未登入 → 去 login
-  if (!user && !path.startsWith('/login')) {
+  // 未登入 → 去 login。API 自己回 JSON，避免 webhook notify 被轉去登入頁。
+  if (!user && !path.startsWith('/login') && !path.startsWith('/api/')) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)

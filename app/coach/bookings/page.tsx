@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { hasBookingSlotStarted } from "@/lib/bookingTime";
+import { requestOrcaBookingNotify } from "@/lib/requestOrcaBookingNotify";
 
 interface Booking {
   id: string;
@@ -69,6 +70,8 @@ export default function MyBookingsPage() {
       setMessage("取消失敗：" + updateError.message);
       return;
     }
+
+    requestOrcaBookingNotify("cancelled", booking.id);
 
     // 2. 退回堂數
     const { data: profile } = await supabase
